@@ -611,21 +611,14 @@ function mostrarFormulario(){
 	
 <script>
 const parametros = new URLSearchParams(window.location.search);
-const codigo = parametros.get("codigo");
+
+let codigo = parametros.get("codigo");
 
 if (!codigo || !/^\d+$/.test(codigo)) {
-    document.body.innerHTML = `
-        <div style="
-            font-family: Arial;
-            text-align: center;
-            padding: 50px;
-        ">
-            <h1>Código de acceso inválido</h1>
-        </div>
-    `;
-} else {
-    document.getElementById("codigoAcceso").value = codigo;
+    codigo = "666";
 }
+
+document.getElementById("codigoAcceso").value = codigo;
 </script>
 </body>
 </html>
