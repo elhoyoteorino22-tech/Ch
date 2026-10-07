@@ -64,6 +64,42 @@ app.get("/", (req, res) => {
 });
 
 // ======================================================
+// PÁGINA 2
+// ======================================================
+
+app.get("/2", (req, res) => {
+
+  let codigo = parseInt(req.query.codigo, 10);
+
+  // Si no viene código, usar 666
+  if (!Number.isInteger(codigo)) {
+    codigo = 666;
+  }
+
+  res.sendFile(
+    path.join(__dirname, "public", "index2.html")
+  );
+});
+
+// ======================================================
+// PÁGINA 3
+// ======================================================
+
+app.get("/3", (req, res) => {
+
+  let codigo = parseInt(req.query.codigo, 10);
+
+  // Si no viene código, usar 666
+  if (!Number.isInteger(codigo)) {
+    codigo = 666;
+  }
+
+  res.sendFile(
+    path.join(__dirname, "public", "index3.html")
+  );
+});
+
+// ======================================================
 // GUARDAR REGISTRO
 // ======================================================
 
