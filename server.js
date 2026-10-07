@@ -51,51 +51,17 @@ crearTabla().catch(console.error);
 
 app.get("/", (req, res) => {
 
-  const codigo = parseInt(req.query.codigo, 10);
+  let codigo = parseInt(req.query.codigo, 10);
 
-  // Verificar que venga un código numérico
+  // Si no viene código, usar 666
   if (!Number.isInteger(codigo)) {
-    return res.status(400).send(`
-      <!DOCTYPE html>
-      <html lang="es">
-      <head>
-        <meta charset="UTF-8">
-        <title>Código requerido</title>
-      </head>
-
-      <body style="
-        font-family: Arial;
-        text-align: center;
-        padding: 50px;
-      ">
-
-        <h1>Código de acceso requerido</h1>
-
-        <p>
-          Debe ingresar un código numérico.
-        </p>
-
-        <p>
-          Ejemplo:
-        </p>
-
-        <strong>/?codigo=1</strong>
-
-      </body>
-      </html>
-    `);
+    codigo = 666;
   }
-
-  // ----------------------------------------------------
-  // IMPORTANTE:
-  // Redirigimos a index.html agregando el código.
-  // ----------------------------------------------------
 
   res.sendFile(
     path.join(__dirname, "public", "index.html")
   );
 });
-
 
 // ======================================================
 // GUARDAR REGISTRO
