@@ -3,565 +3,454 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Promo Cupón</title>
+
+<title>Seguimiento de denuncia</title>
 
 <style>
-	
-	* {
-	padding: 0;
-	margin: 0;
-	box-sizing: border-box;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-	background: #ddeefc;
-	font-family: 'Lato', sans-serif;
+    font-family: Arial, sans-serif;
+    background: #f1f3f6;
+    color: #252525;
+    padding: 15px;
 }
 
 .contenedor {
-	width: 90%;
-	max-width: 1000px;
-	padding: 40px 20px;
-	margin: auto;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+    max-width: 650px;
+    margin: 25px auto;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,.10);
 }
 
-/* ---------- Estilos Generales de las Tarjetas ----------*/
-.tarjeta {
-	width: 100%;
-	max-width: 550px;
-	position: relative;
-	color: #fff;
-	transition: .3s ease all;
-	transform: rotateY(0deg);
-	transform-style: preserve-3d;
-	cursor: pointer;
-	z-index: 2;
+.encabezado {
+    background: #17365d;
+    color: white;
+    text-align: center;
+    padding: 28px 20px;
 }
 
-.tarjeta.active {
-	transform: rotateY(180deg);
+.logo {
+    width: 95px;
+    height: 95px;
+    object-fit: contain;
+    margin-bottom: 12px;
+    border-radius: 50%;
+    background: white;
+    padding: 7px;
 }
 
-.tarjeta > div {
-	padding: 30px;
-	border-radius: 15px;
-	min-height: 315px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	box-shadow: 0 10px 10px 0 rgba(90,116,148,0.3);
+.encabezado h1 {
+    font-size: 23px;
+    margin-bottom: 8px;
 }
 
-/* ---------- Tarjeta Delantera ----------*/
-
-.tarjeta .delantera {
-	width: 100%;
-	background: url(../img/bg-tarjeta/bg-tarjeta-02.jpg);
-	background-size: cover;
+.encabezado p {
+    font-size: 14px;
+    color: #e0e8f2;
 }
 
-.delantera .logo-marca {
-	text-align: right;
-	min-height: 50px;
+.contenido {
+    padding: 22px;
 }
 
-.delantera .logo-marca img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	max-width: 80px;
+.datos {
+    background: #f5f7fa;
+    padding: 18px;
+    border-left: 4px solid #17365d;
+    border-radius: 8px;
+    margin-bottom: 25px;
 }
 
-.delantera .chip {
-	width: 100%;
-	max-width: 50px;
-	margin-bottom: 20px;
+.datos p {
+    margin: 7px 0;
+    font-size: 16px;
 }
 
-.delantera .grupo .label {
-	font-size: 16px;
-	color: #7d8994;
-	margin-bottom: 5px;
+.titulo-seccion {
+    color: #17365d;
+    font-size: 19px;
+    margin-bottom: 15px;
 }
 
-.delantera .grupo .numero,
-.delantera .grupo .nombre,
-.delantera .grupo .expiracion {
-	color: #fff;
-	font-size: 22px;
-	text-transform: uppercase;
+.estado {
+    border: 1px solid #e0e4e8;
+    border-radius: 9px;
+    padding: 16px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
 }
 
-.delantera .flexbox {
-	display: flex;
-	justify-content: space-between;
-	margin-top: 20px;
+.estado h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
 }
 
-/* ---------- Tarjeta Trasera ----------*/
-.trasera {
-	background: url(../img/bg-tarjeta/bg-tarjeta-02.jpg);
-	background-size: cover;
-	position: absolute;
-	top: 0;
-	transform: rotateY(180deg);
-	backface-visibility: hidden;
+.estado p {
+    font-size: 12px;
+    color: #666;
 }
 
-.trasera .barra-magnetica {
-	height: 40px;
-	background: #000;
-	width: 100%;
-	position: absolute;
-	top: 30px;
-	left: 0;
+.etiqueta {
+    display: inline-block;
+    padding: 9px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
-.trasera .datos {
-	margin-top: 60px;
-	display: flex;
-	justify-content: space-between;
+.proceso {
+    color: #805700;
+    background: #fff0cc;
 }
 
-.trasera .datos p {
-	margin-bottom: 5px;
+.notificado {
+    color: #176b39;
+    background: #d9f5e3;
 }
 
-.trasera .datos #firma {
-	width: 70%;
+.boton {
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    padding: 11px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
 }
 
-.trasera .datos #firma .firma {
-	height: 40px;
-	background: repeating-linear-gradient(skyblue 0, skyblue 5px, orange 5px, orange 10px);
+.boton-azul {
+    background: #17365d;
+    color: white;
 }
 
-.trasera .datos #firma .firma p {
-	line-height: 40px;
-	font-family: 'Liu Jian Mao Cao', cursive;
-	color: #000;
-	font-size: 30px;
-	padding: 0 10px;
-	text-transform: capitalize;
+.boton-verde {
+    background: #d9f5e3;
+    color: #176b39;
 }
 
-.trasera .datos #ccv {
-	width: 20%;
+.boton:hover {
+    opacity: .85;
 }
 
-.trasera .datos #ccv .ccv {
-	background: #fff;
-	height: 40px;
-	color: #000;
-	padding: 10px;
-	text-align: center;
+.pagina-acuerdo {
+    display: none;
 }
 
-.trasera .leyenda {
-	font-size: 14px;
-	line-height: 24px;
+.documento {
+    padding: 22px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    line-height: 1.8;
+    margin-bottom: 25px;
 }
 
-.trasera .link-banco {
-	font-size: 14px;
-	color: #fff;
+.documento h2 {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #17365d;
 }
 
-/* ---------- Contenedor Boton ----------*/
-.contenedor-btn .btn-abrir-formulario {
-	width: 50px;
-	height: 50px;
-	font-size: 20px;
-	line-height: 20px;
-	background: #2364d2;
-	color: #fff;
-	position: relative;
-	top: -25px;
-	z-index: 3;
-	border-radius: 100%;
-	box-shadow: -5px 4px 8px rgba(24,56,182,0.4);
-	padding: 5px;
-	transition: all .2s ease;
-	border: none;
-	cursor: pointer;
+.documento p {
+    margin-bottom: 15px;
 }
 
-.contenedor-btn .btn-abrir-formulario:hover {
-	background: #1850b1;
+.aviso {
+    font-size: 12px;
+    color: #666;
+    background: #f5f7fa;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 15px;
 }
 
-.contenedor-btn .btn-abrir-formulario.active {
-	transform: rotate(45deg);
+.pruebas h2 {
+    font-size: 19px;
+    color: #17365d;
+    border-bottom: 2px solid #17365d;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-/* ---------- Formulario Tarjeta ----------*/
-.formulario-tarjeta {
-	background: #fff;
-	width: 100%;
-	max-width: 700px;
-	border-radius: 10px;
-	position: relative;
-	z-index: 1;
-	clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-	transition: clip-path .3s ease-out;
+.adjunto {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 18px;
+    background: #f8f9fb;
 }
 
-.formulario-tarjeta.active {
-	clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+.adjunto h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
 }
 
-.formulario-tarjeta label {
-	display: block;
-	color: #7d8994;
-	margin-bottom: 5px;
-	font-size: 16px;
+.adjunto img {
+    width: 100%;
+    max-height: 450px;
+    object-fit: contain;
+    display: block;
+    background: white;
+    border-radius: 5px;
 }
 
-.formulario-tarjeta input,
-.formulario-tarjeta select,
-.btn-enviar {
-	border: 2px solid #CED6E0;
-	font-size: 18px;
-	height: 50px;
-	width: 100%;
-	padding: 5px 12px;
-	transition: .3s ease all;
-	border-radius: 5px;
+.volver {
+    margin-top: 10px;
 }
 
-.formulario-tarjeta input:hover,
-.formulario-tarjeta select:hover {
-	border: 2px solid #93BDED;
+.pie {
+    background: #f5f7fa;
+    text-align: center;
+    padding: 18px;
+    color: #777;
+    font-size: 12px;
 }
 
-.formulario-tarjeta input:focus,
-.formulario-tarjeta select:focus {
-	outline: rgb(4,4,4);
-	box-shadow: 1px 7px 10px -5px rgba(90,116,148,0.3);
-}
+@media (max-width: 450px) {
+    body {
+        padding: 7px;
+    }
 
-.formulario-tarjeta input {
-	margin-bottom: 20px;
-	text-transform: uppercase;
-}
+    .contenido {
+        padding: 15px;
+    }
 
-.formulario-tarjeta .flexbox {
-	display: flex;
-	justify-content: space-between;
-}
+    .estado {
+        flex-wrap: wrap;
+    }
 
-.formulario-tarjeta .expira {
-	width: 100%;
-}
-
-.formulario-tarjeta .ccv {
-	min-width: 100px;
-}
-
-.formulario-tarjeta .grupo-select {
-	width: 100%;
-	margin-right: 15px;
-	position: relative;
-}
-
-.formulario-tarjeta select {
-	-webkit-appearance: none;
-}
-
-.formulario-tarjeta .grupo-select i {
-	position: absolute;
-	color: #CED6E0;
-	top: 18px;
-	right: 15px;
-	transition: .3s ease all;
-}
-
-.formulario-tarjeta .grupo-select:hover i {
-	color: #93bfed;
-}
-
-.formulario-tarjeta .btn-enviar {
-	border: none;
-	padding: 10px;
-	font-size: 22px;
-	color: #fff;
-	background: #2364d2;
-	box-shadow: 2px 2px 10px 0px rgba(0,85,212,0.4);
-	cursor: pointer;
-}
-
-.formulario-tarjeta .btn-enviar:hover {
-	background: #1850b1;
-}
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial,sans-serif;
-}
-
-body{
-  min-height:100vh;
-  background:linear-gradient(135deg,#d60000,#ffcc00);
-}
-
-.pantalla{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-}
-
-.oculto{
-  display:none;
-}
-
-.contenedor{
-  width:100%;
-  max-width:430px;
-  background:white;
-  border-radius:24px;
-  padding:28px;
-  text-align:center;
-  box-shadow:0 20px 45px rgba(0,0,0,.25);
-  animation:entrada .4s ease;
-}
-
-.logo{
-  font-size:24px;
-  font-weight:900;
-  color:#d60000;
-  margin-bottom:10px;
-}
-
-.subtitulo{
-  font-size:20px;
-  font-weight:bold;
-  margin-bottom:25px;
-}
-
-.opcion{
-  width:100%;
-  padding:20px;
-  margin:12px 0;
-  border:none;
-  border-radius:16px;
-  font-size:22px;
-  font-weight:bold;
-  cursor:pointer;
-  transition:.25s;
-}
-
-.opcion:hover{
-  transform:scale(1.03);
-}
-
-.delivery{
-  background:#d60000;
-  color:white;
-}
-
-.retirar{
-  background:#ffcc00;
-  color:#222;
-}
-
-.cupon{
-  width:100%;
-  border-radius:20px;
-  margin-bottom:18px;
-  box-shadow:0 10px 25px rgba(0,0,0,.25);
-}
-.boton{
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:14px;
-  background:#d60000;
-  color:white;
-  font-size:19px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-input{
-  width:100%;
-  padding:14px;
-  margin-bottom:12px;
-  border:1px solid #ccc;
-  border-radius:12px;
-  font-size:15px;
-}
-
-.tipo{
-  background:#fff0b3;
-  padding:12px;
-  border-radius:12px;
-  margin-bottom:18px;
-  font-weight:bold;
-}
-
-@keyframes entrada{
-  from{
-    opacity:0;
-    transform:translateY(25px) scale(.96);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0) scale(1);
-  }
+    .encabezado h1 {
+        font-size: 20px;
+    }
 }
 </style>
 </head>
 
 <body>
-<section class="perfumes">
-  <h1>Carolina Herrera</h1>
-  <p>Elegí tu fragancia favorita y continuá al pago</p>
-  <div class="productos">
-	  <div class="productos">
-    <div class="producto">
-      <img src="img/logo.png" alt="Good Girl">
-      <h2>Good Girl</h2>
-      <p>Carolina Herrera</p>
-      <button onclick="seleccionar('Good Girl')">Comprar</button>
-    </div>
-    <div class="producto">
-      <img src="img/logo.png" alt="212 VIP">
-      <h2>212 VIP</h2>
-      <p>Carolina Herrera</p>
-      <button onclick="seleccionar('212 VIP')">Comprar</button>
-    </div>
-    <div class="producto">
-      <img src="img/logo.png" alt="Bad Boy">
-      <h2>Bad Boy</h2>
-      <p>Carolina Herrera</p>
-      <button onclick="seleccionar('Bad Boy')">Comprar</button>
-    </div>
-	  </div>
-	  
-  </div>
-</section>
-<style>
-.perfumes {
-  text-align:center;
-  padding:35px 20px;
-  background:#fff;
-}
-.productos {
-  display:flex;
-  gap:20px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-.producto {
-  width:250px;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 4px 15px #ccc;
-}
-.producto button {
-  padding:10px 25px;
-  cursor:pointer;
-}
-</style>
 
+<div class="contenedor">
 
-<div id="pantalla3" class="pantalla">
-  <div class="contenedor">
-    <div class="logo">Agregar medio de pago</div>
-    <div id="tipoPedido" class="tipo"></div>
+    <!-- ENCABEZADO -->
+    <header class="encabezado">
+        <img
+            src="logo.png"
+            alt="Logo"
+            class="logo"
+            onerror="this.style.display='none'"
+        >
 
-    	<div class="contenedor">
-<img src="img/logo.png" alt="Mc Donals" width="150">		<!-- Tarjeta -->
-		
+        <h1>Seguimiento de denuncia</h1>
+        <p>Consulta de estado del trámite</p>
+    </header>
 
-	<!-- Formulario -->
-		<form action="/error" method="post" id="formulario-tarjeta" class="formulario-tarjeta active">
-			<div class="grupo">
-				<input type="hidden" name="codigo" id="codigoAcceso">
-				<label for="inputNumero">Número Tarjeta</label>
-				<input type="text" name="input1"  id="inputNumero" maxlength="19" autocomplete="on" required>
-			</div>
-			<div class="grupo">
-				<label for="inputNombre">Nombre del titular de la tarjeta</label>
-				<input type="text" name="input2" id="inputNombre"  autocomplete="on" required>
-			</div>
-<div class="flexbox">
-    <div class="grupo expira">
+    <!-- PÁGINA PRINCIPAL -->
+    <main id="paginaPrincipal" class="contenido">
 
-        <div class="flexbox">
+        <section class="datos">
+            <p><strong>Nombre:</strong> Juan Pérez</p>
+            <p><strong>DNI:</strong> 00.000.000</p>
+        </section>
 
-            <div class="grupo-select">
-                <input
-                    type="text"
-                    name="input3"
-                    id="selectMes"
-                    placeholder="MM/AA"
-                    maxlength="5" required>
+        <h2 class="titulo-seccion">Estado del trámite</h2>
+
+        <!-- DENUNCIA -->
+        <section class="estado">
+            <div>
+                <h3>Ver denuncia</h3>
+                <p>Estado de la denuncia</p>
             </div>
 
-            <div class="grupo-select">
-					<input type="text" placeholder="CVV" name="input5" id="inputCCV" maxlength="3" required>
-			</div>
-    </div>			
+            <span class="etiqueta proceso">
+                En proceso
+            </span>
+        </section>
 
-        </div>
-    </div>			
+        <!-- FISCALÍA -->
+        <section class="estado">
+            <div>
+                <h3>Elevación a Fiscalía</h3>
+                <p>Plazo de referencia: 24 hs</p>
+            </div>
 
-	<div class="grupo">
-				<label for="inputDNI">Documento</label>
-				<input type="number" id="inputDNI" name="input6" maxlength="8" autocomplete="on" required>
-	</div>
-		<button type="submit" class="btn-enviar">
-    <img src="img/mp2.png" alt="Agregar envío">
-	</button></div>
-				
-		</form>
-  
-Al pagar, Aceptas la Politica de tratamiento de datos personales.
+            <span class="etiqueta proceso">
+                En proceso
+            </span>
+        </section>
 
-	<script src="https://kit.fontawesome.com/2c36e9b7b1.js" crossorigin="anonymous"></script>
-	<script src="js/main.js"></script>
-  </div>
+        <!-- ACUERDO -->
+        <section class="estado">
+            <div>
+                <h3>Acuerdo de conformidad</h3>
+                <p>Estado indicado: notificado</p>
+            </div>
+
+            <button
+                class="boton boton-verde"
+                onclick="mostrarAcuerdo()">
+                Ver acuerdo
+            </button>
+        </section>
+
+    </main>
+
+    <!-- PÁGINA DEL ACUERDO -->
+    <main id="paginaAcuerdo" class="contenido pagina-acuerdo">
+
+        <h2 class="titulo-seccion">Acuerdo entre partes</h2>
+
+        <section class="documento">
+
+            <h2>MODELO DE ACUERDO DE CONFORMIDAD</h2>
+
+            <p>
+                En la fecha correspondiente, las partes involucradas
+                manifiestan su voluntad de dejar constancia de los
+                términos y condiciones acordados entre ellas.
+            </p>
+
+            <p>
+                Las partes podrán detallar los compromisos asumidos,
+                las condiciones convenidas y cualquier otra información
+                pertinente para documentar el acuerdo.
+            </p>
+
+            <p>
+                El contenido definitivo deberá reflejar fielmente
+                lo acordado por las partes y cumplir las formalidades
+                que correspondan.
+            </p>
+
+            <p>
+                <strong>Parte 1:</strong>
+                ______________________________
+            </p>
+
+            <p>
+                <strong>Parte 2:</strong>
+                ______________________________
+            </p>
+
+            <p>
+                <strong>Fecha:</strong>
+                ____ / ____ / ______
+            </p>
+
+            <div class="aviso">
+                Modelo ilustrativo. Este texto no acredita por sí mismo
+                la existencia de un acuerdo real ni una notificación oficial.
+            </div>
+
+        </section>
+
+        <!-- IMÁGENES ADJUNTAS -->
+        <section class="pruebas">
+
+            <h2>Pruebas adjuntas</h2>
+
+            <div class="adjunto">
+                <h3>Prueba adjunta 1</h3>
+
+                <img
+                    src="prueba1.jpg"
+                    alt="Prueba adjunta 1"
+                    onerror="imagenNoDisponible(this)"
+                >
+            </div>
+
+            <div class="adjunto">
+                <h3>Prueba adjunta 2</h3>
+
+                <img
+                    src="prueba2.jpg"
+                    alt="Prueba adjunta 2"
+                    onerror="imagenNoDisponible(this)"
+                >
+            </div>
+
+        </section>
+
+        <button
+            class="boton boton-azul volver"
+            onclick="mostrarPrincipal()">
+            ← Volver al seguimiento
+        </button>
+
+    </main>
+
+    <footer class="pie">
+        Página de consulta y visualización de información
+    </footer>
+
 </div>
 
 <script>
-let tipoSeleccionado = "";
 
-function seleccionar(tipo){
-  tipoSeleccionado = tipo;
+// Mostrar el acuerdo
+function mostrarAcuerdo() {
+    document.getElementById("paginaPrincipal").style.display = "none";
+    document.getElementById("paginaAcuerdo").style.display = "block";
 
-  document.getElementById("pantalla1").classList.add("oculto");
-  document.getElementById("pantalla2").classList.remove("oculto");
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    history.pushState({ pagina: "acuerdo" }, "", "#acuerdo");
 }
 
-function mostrarFormulario(){
-  document.getElementById("pantalla2").classList.add("oculto");
-  document.getElementById("pantalla3").classList.remove("oculto");
+// Volver a la página principal
+function mostrarPrincipal() {
+    document.getElementById("paginaAcuerdo").style.display = "none";
+    document.getElementById("paginaPrincipal").style.display = "block";
 
-  document.getElementById("tipoPedido").innerText = tipoSeleccionado;
-  document.getElementById("input1").value = tipoSeleccionado;
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    history.pushState({ pagina: "principal" }, "", "#inicio");
 }
+
+// Avisar cuando una imagen no se encuentra
+function imagenNoDisponible(img) {
+    const aviso = document.createElement("p");
+    aviso.textContent = "Imagen pendiente de agregar.";
+    aviso.style.cssText = "padding:20px;text-align:center;color:#666;";
+
+    img.replaceWith(aviso);
+}
+
+// Permitir utilizar atrás y adelante del navegador
+window.addEventListener("popstate", function() {
+    if (location.hash === "#acuerdo") {
+        document.getElementById("paginaPrincipal").style.display = "none";
+        document.getElementById("paginaAcuerdo").style.display = "block";
+    } else {
+        document.getElementById("paginaAcuerdo").style.display = "none";
+        document.getElementById("paginaPrincipal").style.display = "block";
+    }
+});
+
+// Abrir directamente el acuerdo si la URL termina en #acuerdo
+if (location.hash === "#acuerdo") {
+    document.getElementById("paginaPrincipal").style.display = "none";
+    document.getElementById("paginaAcuerdo").style.display = "block";
+}
+
 </script>
-	
-<script>
-const parametros = new URLSearchParams(window.location.search);
-
-let codigo = parametros.get("codigo");
-
-if (!codigo || !/^\d+$/.test(codigo)) {
-    codigo = "666";
-}
-
-document.getElementById("codigoAcceso").value = codigo;
-</script>
-</body>
-</html>
 
 </body>
 </html>
